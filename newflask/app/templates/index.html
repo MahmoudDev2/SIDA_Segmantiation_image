@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Fake Image Detector</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+        }
+        h1 {
+            color: #5a5a5a;
+        }
+        input[type="file"] {
+            margin-bottom: 1rem;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 2rem;
+        }
+        .result img {
+            max-width: 100%;
+            max-height: 400px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+        }
+        .result h2 {
+            font-size: 1.5rem;
+        }
+        .error-box {
+            border: 2px solid #d9534f;
+            background-color: #f2dede;
+            color: #a94442;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+        .fake {
+            color: #d9534f;
+        }
+        .real {
+            color: #5cb85c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fake Image Detector</h1>
+
+        {% if model_loaded %}
+            <p>Upload an image to check if it is real or AI-generated.</p>
+            <form action="/predict" method="post" enctype="multipart/form-data">
+                <input type="file" name="file" accept="image/*" required>
+                <br>
+                <input type="submit" value="Check Image">
+            </form>
+        {% else %}
+            <div class="error-box">
+                <h2>Error: Model Not Loaded</h2>
+                <p>The pre-trained model weights could not be found. Please follow these steps:</p>
+                <ol style="text-align: left;">
+                    <li>Download the model from this link: <a href="https://www.dropbox.com/s/2g2jagq2jn1fd0i/blur_jpg_prob0.5.pth?dl=0">Download Weights</a></li>
+                    <li>Rename the downloaded file to <code>blur_jpg_prob0.5.pth</code>.</li>
+                    <li>Place the file inside the <code>newflask/weights/</code> directory.</li>
+                    <li>Restart the application.</li>
+                </ol>
+            </div>
+        {% endif %}
+
+        {% if prediction %}
+        <div class="result">
+            <img src="{{ image_file_url }}" alt="Uploaded Image">
+            <h2 class="{{ 'fake' if 'Fake' in prediction else 'real' }}">{{ prediction }}</h2>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>
